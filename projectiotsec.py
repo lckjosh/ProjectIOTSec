@@ -39,9 +39,9 @@ def iot_guess(portlist, hostlist):
             for port in device['ports']:
                 logging.debug('Port: ' + port)
                 if port in my_dict['ports']:
-                    iot.append('Device: %s has Port %s open, compatible with %s' %
+                    iot.append('Device: %s has Port %s open, possibly compatible with %s exploits' %
                                  (device['ip'], str(port), my_dict['category']))
-                    logging.debug(G+'Device: %s has Port %s open, compatible with %s' %
+                    logging.debug(G+'Device: %s has Port %s open, possibly compatible with %s exploits' %
                                  (device['ip'], str(port), my_dict['category'])+W)
 
         # IoT detection based on keywords in banner
