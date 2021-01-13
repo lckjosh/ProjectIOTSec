@@ -142,7 +142,7 @@ if __name__=='__main__':
                     print('   %s = %s' % (key, row[key]))
 
                     for text in final_list:
-                        if ip in text:
+                        if (ip + ' ') in text:
                             if port in text:
                                 print('   ' + text)
 
