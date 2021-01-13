@@ -78,6 +78,8 @@ if __name__=='__main__':
         masscan_max_rate = input("Masscan max rate in pps (default = 100) : ") or "100"
         masscan_wait_time = input("Masscan wait time (default = 30) : ") or "30"
         masscan_output_dir = input("Directory for the masscan output files (default = 'scan-results/') : ") or "scan-results/"
+        if not os.path.exists(masscan_output_dir):
+            os.makedirs(masscan_output_dir)
         ip_target_range = input("Enter IP range with CIDR : ")
         scanner = Masscan_Scanner.Masscan(target=ip_target_range,
                                         prefix=masscan_file_prefix,
