@@ -105,6 +105,11 @@ if __name__=='__main__':
         db.create_scan_table(tab_name)
         db.insert_data(tab_name, parsed_list)
         rows = db.extract_dist_ip(tab_name)
+        rows_2 = db.extract_first_ip(tab_name)
+        first_ip = ''
+        for row in rows_2:
+            first_ip = row[0]
+
         # db.print_db_results(rows)
         device_service_list, device_port_list = db.exctract_port_ip(tab_name, rows)
         db.close_db()
@@ -113,30 +118,40 @@ if __name__=='__main__':
         final_list = sorted(list(set(iot_list)))
         # for iot in sorted(list(set(iot_list))):
         #     print(iot)
-        print('List of all records found:\t')
-        counter = 0
-
+        print('\nList of all records found:\n')
+        print('1. IP = ' + first_ip)
+        counter = 1
+        previous_ip = ''
+       
         for row in rows:
-            counter += 1
+            # counter += 1
             ip = ''
             port = ''
+
             for key in row.keys():
                 if key == 'IP':
                     ip = row[key]
-                    print('\n')
-                    print('%s. %s = %s' % (counter, key, row[key]), end='')
+                    if ip == first_ip:
+                        pass
+                    elif ip != previous_ip:  
+                        counter+=1
+                        print('\n%s. %s = %s' % (counter, key, row[key]))
+
                 else:
                     port = row[key]
-                    print(', %s = %s' % (key, row[key]))
+                    print('   %s = %s' % (key, row[key]))
 
                     for text in final_list:
-                        if ip in text:
+                        if (ip + ' ') in text:
                             if port in text:
-                                print(text)
-                        
+                                print('   ' + text)
 
-        print('Total result: '+str(counter))
+                               
 
+            previous_ip = row[0]           
+
+        print('\nTotal result: '+str(counter))
+        
         
 
         # print("network scan")

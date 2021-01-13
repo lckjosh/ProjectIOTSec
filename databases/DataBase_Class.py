@@ -163,13 +163,17 @@ class Database(object):
 
 
     def extract_dist_ip(self, tab_name):
-        sql = 'SELECT distinct IP, Port FROM %s' % tab_name
+        sql = 'SELECT distinct IP, PORT FROM %s order by IP desc' % tab_name
         self.cursor.execute(sql)
         self.cursor.row_factory = sqlite3.Row
         return self.cursor.fetchall()
-    
 
-    
+    def extract_first_ip(self, tab_name):
+        sql = 'SELECT distinct IP, PORT FROM %s order by IP desc limit 1' % tab_name
+        self.cursor.execute(sql)
+        self.cursor.row_factory = sqlite3.Row
+        return self.cursor.fetchall()
+        
     # def extract_dist_ip(self, tab_name):
     #     sql = 'SELECT distinct IP, PORT FROM %s' % tab_name
     #     self.cursor.execute(sql)
