@@ -23,7 +23,7 @@ class Masscan(object):
         self.output_format = "grepable"
         self.user_agent = str("Mozilla/5.0_(Windows_NT_10.0;_Win64;_x64)_AppleWebKit/537.36_(KHTML,_like_Gecko)_Chrome/"
                               "60.0.3112.90_Safari/537.36")
-        self.outfile = ''
+        self.outfile = 'scan-192-168-0-0_24T20210114230133.txt'
         self.prefix = prefix
         self.target = target
         self.outdir = outdir

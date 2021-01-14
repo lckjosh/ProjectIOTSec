@@ -54,10 +54,10 @@ def iot_guess(portlist, hostlist):
                     banner = service.split('/')
                     if (keyword.upper() in str(banner[1:]) or keyword.lower() in str(banner[1:])
                         or keyword in str(banner[1:])) and keyword != '':
-                        iot.append('Device: %s has keyword: %s in port %s banner: %s' %
-                                     (device['ip'], str(keyword), service.split('/')[0], str(banner[1:])))
-                        logging.debug(G+'Device: %s has keyword: %s in port %s banner: %s' %
-                                     (device['ip'], str(keyword), service.split('/')[0], str(banner[1:]))+W)
+                        iot.append('Device: %s has keyword: %s in port %s banner: %s, possibly compatible with %s exploits' %
+                                     (device['ip'], str(keyword), service.split('/')[0], str(banner[1:]), my_dict['category']))
+                        logging.debug(G+'Device: %s has keyword: %s in port %s banner: %s, possibly compatible with %s exploits' %
+                                     (device['ip'], str(keyword), service.split('/')[0], str(banner[1:]), my_dict['category'])+W)
     return iot
 
 if __name__=='__main__':
@@ -88,14 +88,14 @@ if __name__=='__main__':
                                         outdir=masscan_output_dir,
                                         wait_time=masscan_wait_time)
 
-        ip_validity = scanner.check_ip_format(ip_target_range)
-        while(ip_validity == False):
-            ip_target_range = input("Enter IP range with CIDR : ")
-            ip_validity = scanner.check_ip_format(ip_target_range)
-        scanner.check_binary()
-        scanner.check_system()
-        scanner.run()
-        scanner.cleanup()
+        # ip_validity = scanner.check_ip_format(ip_target_range)
+        # while(ip_validity == False):
+        #     ip_target_range = input("Enter IP range with CIDR : ")
+        #     ip_validity = scanner.check_ip_format(ip_target_range)
+        # scanner.check_binary()
+        # scanner.check_system()
+        # scanner.run()
+        # scanner.cleanup()
 
         # parsing masscan output
         parser = Masscan_Parser_Class.Masscan_Parser(file=masscan_output_dir+scanner.get_outfile())
@@ -189,7 +189,17 @@ if __name__=='__main__':
         print('\nTotal result: '+str(counter))
         print("report_list:")
         print(report_list)
-        
+
+        # ask for ip to exploit
+        exploit_ip = input("Please enter the IP address to exploit: ")
+        print(exploit_ip + " may be compatible with the following exploits: ")
+
+        # try to get categories of exploits selected ip may be compatible with
+        for ip in report_list:
+            if ip['IP'][0] == exploit_ip:
+                for line in ip['Banner']:
+                    print(line)
+
         # print("network scan")
     elif (choice == '2'):
         print("help")
