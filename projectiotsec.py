@@ -116,6 +116,9 @@ if __name__=='__main__':
 
         iot_list = iot_guess(device_port_list, device_service_list)
         final_list = sorted(list(set(iot_list)))
+        print("final_list:")
+        print(final_list)
+        print()
 
         # Initialising list and dictionary for report generation
         report_list = []
@@ -133,7 +136,6 @@ if __name__=='__main__':
         for row in rows_3:
             last_ip = row[0]
             last_port = row[1]
-            print("The ip and port is %s: %s" % (last_ip, last_port))
 
         print('\nList of all records found:\n')
         print('1. IP = ' + first_ip)
@@ -171,8 +173,8 @@ if __name__=='__main__':
                     report_dict["Port"].append(port)
 
                     for text in final_list:
-                        if (ip + ' ') in text:
-                            if port in text:
+                        if (' ' + ip + ' ') in text:
+                            if (' ' + port + ' ') in text:
                                 print('   ' + text)
                                 report_dict["Banner"].append(text)         
 
@@ -185,6 +187,7 @@ if __name__=='__main__':
 
           
         print('\nTotal result: '+str(counter))
+        print("report_list:")
         print(report_list)
         
         # print("network scan")
