@@ -1,0 +1,6 @@
+ScanDB.sqlite
+scan-results
+databases/__pycache__/
+exploits/__pycache__/
+Utils.pyc
+__pycache__/
