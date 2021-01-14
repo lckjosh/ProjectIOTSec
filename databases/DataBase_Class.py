@@ -173,6 +173,12 @@ class Database(object):
         self.cursor.execute(sql)
         self.cursor.row_factory = sqlite3.Row
         return self.cursor.fetchall()
+
+    def extract_last_ip(self, tab_name):
+        sql = 'SELECT distinct IP, PORT FROM %s order by IP, PORT desc limit 1' % tab_name
+        self.cursor.execute(sql)
+        self.cursor.row_factory = sqlite3.Row
+        return self.cursor.fetchall()
         
     # def extract_dist_ip(self, tab_name):
     #     sql = 'SELECT distinct IP, PORT FROM %s' % tab_name

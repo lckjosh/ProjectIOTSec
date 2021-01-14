@@ -108,9 +108,7 @@ if __name__=='__main__':
         db.insert_data(tab_name, parsed_list)
         rows = db.extract_dist_ip(tab_name)
         rows_2 = db.extract_first_ip(tab_name)
-        first_ip = ''
-        for row in rows_2:
-            first_ip = row[0]
+        rows_3 = db.extract_last_ip(tab_name)
 
         # db.print_db_results(rows)
         device_service_list, device_port_list = db.exctract_port_ip(tab_name, rows)
@@ -118,10 +116,31 @@ if __name__=='__main__':
 
         iot_list = iot_guess(device_port_list, device_service_list)
         final_list = sorted(list(set(iot_list)))
-        # for iot in sorted(list(set(iot_list))):
-        #     print(iot)
+        print("final_list:")
+        print(final_list)
+        print()
+
+        # Initialising list and dictionary for report generation
+        report_list = []
+        dict_keys = ["IP", "Port", "Banner", "Exploits", "Bruteforce"]
+        report_dict = {key:[] for key in dict_keys}
+
+        # Obtain first ip in table
+        first_ip = ''
+        for row in rows_2:
+            first_ip = row[0]
+
+        # Obtain last ip in the table 
+        last_ip = ''
+        last_port = ''
+        for row in rows_3:
+            last_ip = row[0]
+            last_port = row[1]
+
         print('\nList of all records found:\n')
         print('1. IP = ' + first_ip)
+        report_dict["IP"].append(first_ip)
+
         counter = 1
         previous_ip = ''
        
@@ -129,33 +148,48 @@ if __name__=='__main__':
             # counter += 1
             ip = ''
             port = ''
-
+        
             for key in row.keys():
                 if key == 'IP':
                     ip = row[key]
-                    if ip == first_ip:
+                    if ip == first_ip:  
                         pass
+
                     elif ip != previous_ip:  
                         counter+=1
                         print('\n%s. %s = %s' % (counter, key, row[key]))
 
+                        # Appends the dictionary to list
+                        report_dict_copy = report_dict.copy()
+                        report_list.append(report_dict_copy)
+
+                        # Reset dict key values
+                        report_dict = {key:[] for key in dict_keys}
+                        report_dict["IP"].append(ip)
+                   
                 else:
                     port = row[key]
                     print('   %s = %s' % (key, row[key]))
+                    report_dict["Port"].append(port)
 
                     for text in final_list:
-                        if (ip + ' ') in text:
-                            if port in text:
+                        if (' ' + ip + ' ') in text:
+                            if (' ' + port + ' ') in text:
                                 print('   ' + text)
+                                report_dict["Banner"].append(text)         
 
-                               
+            
+            if last_ip == ip and last_port == port:
+                report_dict_copy = report_dict.copy()
+                report_list.append(report_dict_copy)
 
             previous_ip = row[0]           
 
+          
         print('\nTotal result: '+str(counter))
+        print("report_list:")
+        print(report_list)
         
-        
-
         # print("network scan")
     elif (choice == '2'):
         print("help")
