@@ -2,9 +2,12 @@
 
 import sys
 import os
-import exploits
 import resources
 import re
+from exploits.HomeController.VeraEdge_CVE_2019_13598 import VeraEdge_CVE_2019_13598
+from exploits.HomeController.VeraEdge_CVE_2019_15498 import VeraEdge_CVE_2019_15498
+from exploits.IP_Camera.Foscam_C2_CVE_2018_19070 import Foscam_C2_CVE_2018_19070
+from exploits.Router.ASUS_RT_AC3200_CVE_2018_14714 import ASUS_RT_AC3200_CVE_2018_14714
 from scanner import Masscan_Scanner
 from parsers import Masscan_Parser_Class
 from databases import DataBase_Class
@@ -60,6 +63,13 @@ def iot_guess(portlist, hostlist):
                         logging.debug(G+'Device: %s has keyword: %s in port %s banner: %s, possibly compatible with %s exploits' %
                                       (device['ip'], str(keyword), service.split('/')[0], str(banner[1:]), my_dict['category'])+W)
     return iot
+
+# set exploit status for the specific IP_Address
+def set_exploit_status(exploit_ip, exploit_status):
+    for device in report_list:
+        if device['IP'][0] == exploit_ip:
+            # set that device's exploit status
+            device['Exploits'].append(exploit_status)
 
 
 if __name__ == '__main__':
@@ -194,24 +204,42 @@ if __name__ == '__main__':
 
         # ask for ip to exploit
         exploit_ip = input("Please enter the IP address to exploit: ")
-        print(exploit_ip + " may be compatible with the following exploits: ")
+        print(exploit_ip + " may be compatible with the following exploits: \n")
 
         # try to get categories of exploits selected ip may be compatible with
         categories = []
         for ip in report_list:
             if ip['IP'][0] == exploit_ip:
                 for line in ip['Banner']:
-                    x = re.search(r"possibly compatible with ([\w-]+)", line)
+                    x = re.search(r"possibly compatible with ([\w_]+)", line)
                     if x:
                         if x.group(1) not in categories:
                             categories.append(x.group(1))
                 break
 
-        print(categories)
+        # print out categories
+        option_exploit_dict = {}
+        counter = 1
         for category in categories:
+            print('   ' + category)
+            print('   '+'='*len(category))
             filenames = os.listdir("exploits/"+category)
             for filename in filenames:
-                print(filename)
+                if filename != "__init__.py" and filename != "__pycache__":
+                    option_exploit_dict[counter] = filename
+                    print(str(counter) + '. ' + filename)
+                    counter += 1
+            print()
+
+        # ask for option of exploit
+        option = input("Please enter choice of exploit: ")
+
+        # run exploit
+        exploit_selected = option_exploit_dict.get(int(option))
+        exploit_selected = exploit_selected.replace(".py", "")
+        exploit_status = eval(exploit_selected)(exploit_ip)
+        set_exploit_status(exploit_ip, exploit_status)
+        print(exploit_status)
 
        # print("network scan")
     elif (choice == '2'):
