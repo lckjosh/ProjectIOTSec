@@ -7,7 +7,9 @@ import re
 from exploits.HomeController.VeraEdge_CVE_2019_13598 import VeraEdge_CVE_2019_13598
 from exploits.HomeController.VeraEdge_CVE_2019_15498 import VeraEdge_CVE_2019_15498
 from exploits.IP_Camera.Foscam_C2_CVE_2018_19070 import Foscam_C2_CVE_2018_19070
+from exploits.IP_Camera.DLink_Auth_RCE import DLink_Auth_RCE
 from exploits.Router.ASUS_RT_AC3200_CVE_2018_14714 import ASUS_RT_AC3200_CVE_2018_14714
+from exploits.NAS.QNAP_CVE_2019_7192 import QNAP_CVE_2019_7192
 from scanner import Masscan_Scanner
 from parsers import Masscan_Parser_Class
 from databases import DataBase_Class
@@ -65,6 +67,8 @@ def iot_guess(portlist, hostlist):
     return iot
 
 # set exploit status for the specific IP_Address
+
+
 def set_exploit_status(exploit_ip, exploit_status):
     for device in report_list:
         if device['IP'][0] == exploit_ip:
@@ -101,18 +105,18 @@ if __name__ == '__main__':
         scanner = Masscan_Scanner.Masscan(target=ip_target_range,
                                           prefix=masscan_file_prefix,
                                           binary=masscan_binary_path,
-                                          max_rate=masscan_wait_time,
+                                          max_rate=masscan_max_rate,
                                           outdir=masscan_output_dir,
                                           wait_time=masscan_wait_time)
 
-        # ip_validity = scanner.check_ip_format(ip_target_range)
-        # while(ip_validity == False):
-        #     ip_target_range = input("Enter IP range with CIDR : ")
-        #     ip_validity = scanner.check_ip_format(ip_target_range)
-        # scanner.check_binary()
-        # scanner.check_system()
-        # scanner.run()
-        # scanner.cleanup()
+        ip_validity = scanner.check_ip_format(ip_target_range)
+        while(ip_validity == False):
+            ip_target_range = input("Enter IP range with CIDR : ")
+            ip_validity = scanner.check_ip_format(ip_target_range)
+        scanner.check_binary()
+        scanner.check_system()
+        scanner.run()
+        scanner.cleanup()
 
         # parsing masscan output
         parser = Masscan_Parser_Class.Masscan_Parser(
@@ -202,8 +206,16 @@ if __name__ == '__main__':
 
         print('\nTotal result: '+str(counter))
 
-        # ask for ip to exploit
-        exploit_ip = input("Please enter the IP address to exploit: ")
+        while True:
+            # ask for ip to exploit
+            exploit_ip = input("Please enter the IP address to exploit: ")
+            regex = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+            r = re.compile(regex)
+            if r.match(exploit_ip):
+                break
+            else:
+                print("Invalid IP address! ")
+
         print(exploit_ip + " may be compatible with the following exploits: \n")
 
         # try to get categories of exploits selected ip may be compatible with
@@ -211,7 +223,8 @@ if __name__ == '__main__':
         for ip in report_list:
             if ip['IP'][0] == exploit_ip:
                 for line in ip['Banner']:
-                    x = re.search(r"possibly compatible with ([\w_]+)", line)
+                    x = re.search(
+                        r"possibly compatible with ([\w_]+)", line)
                     if x:
                         if x.group(1) not in categories:
                             categories.append(x.group(1))
@@ -238,10 +251,11 @@ if __name__ == '__main__':
         exploit_selected = option_exploit_dict.get(int(option))
         exploit_selected = exploit_selected.replace(".py", "")
         exploit_status = eval(exploit_selected)(exploit_ip)
+
+        # set exploit status in report_list
         set_exploit_status(exploit_ip, exploit_status)
         print(exploit_status)
 
-       # print("network scan")
     elif (choice == '2'):
         print("help")
     elif (choice == '3'):
