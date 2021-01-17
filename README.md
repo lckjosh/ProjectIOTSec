@@ -22,8 +22,6 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 ### Dependencies
 - Python3
 - Ubuntu 18.04 OS
-- 
--
 
 ### Cloning and Compilation
 ```
