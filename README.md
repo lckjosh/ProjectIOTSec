@@ -20,6 +20,23 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 ## Installation
 
 ### Dependencies
+- Python3
+- Ubuntu 18.04 OS
+- 
+-
 
+### Cloning and Compilation
+```
+git clone https://github.com/lckjosh/ProjectIOTSec.git
 
+```
+## Usage  
+__NOTE: RUN `sudo python3 projectiotsec.py` to run as user with root privileges.
+```
+sudo python3 projectiotsec.py
+
+Options:
+[1] Perform scan of network using Masscan
+[2] Help page (effectively a man page)
+[3] Exit program
 
