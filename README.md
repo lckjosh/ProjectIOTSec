@@ -28,7 +28,6 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 ### Cloning and Compilation
 ```
 git clone https://github.com/lckjosh/ProjectIOTSec.git
-
 ```
 ## Usage  
 __NOTE: RUN `sudo python3 projectiotsec.py` to run as user with root privileges.
