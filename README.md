@@ -16,6 +16,7 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 - Dlink DCS-933L IP Camera Exploit
 - VeraEdge Home Controller Exploit
 - Foscam C2 IP Camera Exploit
+- Generated HTML Report
 
 ## Installation
 
