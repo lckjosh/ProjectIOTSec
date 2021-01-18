@@ -304,11 +304,9 @@ if __name__ == '__main__':
                     print("Please input a valid option")
                     continue
 
-            print(user_option)
-
             if (user_option == 'n'):
                 sys.exit(0)
-                
+
             else:
                 continue
             
