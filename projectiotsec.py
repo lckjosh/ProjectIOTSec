@@ -7,6 +7,7 @@ import re
 from exploits.HomeController.VeraEdge_CVE_2019_13598 import VeraEdge_CVE_2019_13598
 from exploits.HomeController.VeraEdge_CVE_2019_15498 import VeraEdge_CVE_2019_15498
 from exploits.IP_Camera.Foscam_C2_CVE_2018_19070 import Foscam_C2_CVE_2018_19070
+from exploits.IP_Camera.Foscam_C2_CVE_2018_19077 import Foscam_C2_CVE_2018_19077
 from exploits.IP_Camera.DLink_Auth_RCE import DLink_Auth_RCE
 from exploits.Router.ASUS_RT_AC3200_CVE_2018_14714 import ASUS_RT_AC3200_CVE_2018_14714
 from exploits.NAS.QNAP_CVE_2019_7192 import QNAP_CVE_2019_7192
@@ -15,7 +16,6 @@ from parsers import Masscan_Parser_Class
 from databases import DataBase_Class
 from Utils import *
 import ast
-
 
 def iot_guess(portlist, hostlist):
     """
@@ -145,25 +145,27 @@ if __name__ == '__main__':
         dict_keys = ["IP", "Port", "Banner", "Exploits", "Bruteforce"]
         report_dict = {key: [] for key in dict_keys}
 
-        # Obtain first ip in table
+        # Initialising variables
+        last_ip = ''
+        last_port = ''
         first_ip = ''
+
+        # Obtain first ip in table
         for row in rows_2:
             first_ip = row[0]
 
         # Obtain last ip in the table
-        last_ip = ''
-        last_port = ''
         for row in rows_3:
             last_ip = row[0]
             last_port = row[1]
-
-        print('\nList of all records found:\n')
-        print('1. IP = ' + first_ip)
+            
+        # Append the first IP
         report_dict["IP"].append(first_ip)
 
         counter = 1
         previous_ip = ''
 
+        # Append to report_list through iterating the db
         for row in rows:
             # counter += 1
             ip = ''
@@ -176,9 +178,6 @@ if __name__ == '__main__':
                         pass
 
                     elif ip != previous_ip:
-                        counter += 1
-                        print('\n%s. %s = %s' % (counter, key, row[key]))
-
                         # Appends the dictionary to list
                         report_dict_copy = report_dict.copy()
                         report_list.append(report_dict_copy)
@@ -189,13 +188,11 @@ if __name__ == '__main__':
 
                 else:
                     port = row[key]
-                    print('   %s = %s' % (key, row[key]))
                     report_dict["Port"].append(port)
 
                     for text in final_list:
                         if (' ' + ip + ' ') in text:
                             if (' ' + port + ' ') in text:
-                                print('   ' + text)
                                 report_dict["Banner"].append(text)
 
             if last_ip == ip and last_port == port:
@@ -204,60 +201,118 @@ if __name__ == '__main__':
 
             previous_ip = row[0]
 
-        print('\nTotal result: '+str(counter))
-
+        # Loop for devices menu to allow user to continuously exploit multiple devices
         while True:
-            # ask for ip to exploit
-            exploit_ip = input("Please enter the IP address to exploit: ")
-            regex = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
-            r = re.compile(regex)
-            if r.match(exploit_ip):
-                break
+            print('\nList of all records found:\n')
+            print('1. IP = ' + first_ip)
+            report_dict["IP"].append(first_ip)
+
+            counter = 1
+            previous_ip = ''
+
+            for row in rows:
+                # counter += 1
+                ip = ''
+                port = ''
+
+                for key in row.keys():
+                    if key == 'IP':
+                        ip = row[key]
+                        if ip == first_ip:
+                            pass
+
+                        elif ip != previous_ip:
+                            counter += 1
+                            print('\n%s. %s = %s' % (counter, key, row[key]))
+
+                    else:
+                        port = row[key]
+                        print('   %s = %s' % (key, row[key]))
+
+                        for text in final_list:
+                            if (' ' + ip + ' ') in text:
+                                if (' ' + port + ' ') in text:
+                                    print('   ' + text)
+
+                previous_ip = row[0]
+
+            print('\nTotal result: '+str(counter))
+
+            while True:
+                # ask for ip to exploit
+                exploit_ip = input("\nPlease enter the IP address to exploit: ")
+                regex = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
+                r = re.compile(regex)
+                if r.match(exploit_ip):
+                    break
+                else:
+                    print("Invalid IP address! ")
+
+            print(exploit_ip + " may be compatible with the following exploits: \n")
+
+            # try to get categories of exploits selected ip may be compatible with
+            categories = []
+            for ip in report_list:
+                if ip['IP'][0] == exploit_ip:
+                    for line in ip['Banner']:
+                        x = re.search(
+                            r"possibly compatible with ([\w_]+)", line)
+                        if x:
+                            if x.group(1) not in categories:
+                                categories.append(x.group(1))
+                    break
+
+            # print out categories
+            option_exploit_dict = {}
+            counter = 1
+            for category in categories:
+                print('   ' + category)
+                print('   '+'='*len(category))
+                filenames = os.listdir("exploits/"+category)
+                for filename in filenames:
+                    if filename != "__init__.py" and filename != "__pycache__":
+                        if filename != "dos.py":
+                            option_exploit_dict[counter] = filename
+                            print(str(counter) + '. ' + filename)
+                            counter += 1
+                print()
+
+            # ask for option of exploit
+            option = input("Please enter choice of exploit: ")
+
+            # run exploit
+            exploit_selected = option_exploit_dict.get(int(option))
+            exploit_selected = exploit_selected.replace(".py", "")
+            exploit_status = eval(exploit_selected)(exploit_ip)
+
+            # set exploit status in report_list
+            set_exploit_status(exploit_ip, exploit_status)
+            print(exploit_status)
+
+            global user_option
+
+            while True:
+                user_option = input("Would you like to exploit another device? (y/n): ")
+
+                if (user_option == 'y'):
+                    break
+
+                elif (user_option == 'n'):
+                    break
+
+                else:
+                    print("Please input a valid option")
+                    continue
+
+            if (user_option == 'n'):
+                sys.exit(0)
+
             else:
-                print("Invalid IP address! ")
-
-        print(exploit_ip + " may be compatible with the following exploits: \n")
-
-        # try to get categories of exploits selected ip may be compatible with
-        categories = []
-        for ip in report_list:
-            if ip['IP'][0] == exploit_ip:
-                for line in ip['Banner']:
-                    x = re.search(
-                        r"possibly compatible with ([\w_]+)", line)
-                    if x:
-                        if x.group(1) not in categories:
-                            categories.append(x.group(1))
-                break
-
-        # print out categories
-        option_exploit_dict = {}
-        counter = 1
-        for category in categories:
-            print('   ' + category)
-            print('   '+'='*len(category))
-            filenames = os.listdir("exploits/"+category)
-            for filename in filenames:
-                if filename != "__init__.py" and filename != "__pycache__":
-                    option_exploit_dict[counter] = filename
-                    print(str(counter) + '. ' + filename)
-                    counter += 1
-            print()
-
-        # ask for option of exploit
-        option = input("Please enter choice of exploit: ")
-
-        # run exploit
-        exploit_selected = option_exploit_dict.get(int(option))
-        exploit_selected = exploit_selected.replace(".py", "")
-        exploit_status = eval(exploit_selected)(exploit_ip)
-
-        # set exploit status in report_list
-        set_exploit_status(exploit_ip, exploit_status)
-        print(exploit_status)
-
+                continue
+            
     elif (choice == '2'):
         print("help")
+
     elif (choice == '3'):
         print("Exiting...")
         sys.exit(0)
