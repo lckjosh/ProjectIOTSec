@@ -38,6 +38,7 @@ sudo apt install masscan
 sudo apt install curl
 ```
 - Ubuntu 18.04 OS
+__Can be found at__ https://releases.ubuntu.com/18.04/
 
 ### Cloning and Compilation
 ```
