@@ -4,3 +4,4 @@ databases/__pycache__/
 exploits/__pycache__/
 Utils.pyc
 __pycache__/
+paused.conf
