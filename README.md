@@ -11,6 +11,10 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 
 - Service discovery and banner grabbing with masscan
 - Bruteforce 
+  - SSH
+  - FTP
+  - Telnet
+  - HTTP
 - ASUS RT-AC3200 Router Exploit
 - QNAP TS-412 NAS Exploit 
 - Dlink DCS-933L IP Camera Exploit
@@ -22,6 +26,8 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 
 ### Dependencies
 - Python3
+- Masscan
+- Curl
 - Ubuntu 18.04 OS
 
 ### Cloning and Compilation
