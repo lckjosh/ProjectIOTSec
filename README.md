@@ -35,7 +35,7 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 git clone https://github.com/lckjosh/ProjectIOTSec.git
 ```
 ## Usage  
-__NOTE: RUN `sudo python3 projectiotsec.py` to run as user with root privileges.
+__NOTE: RUN `sudo python3 projectiotsec.py` to run as user with root privileges.__
 ```
 sudo python3 projectiotsec.py
 
