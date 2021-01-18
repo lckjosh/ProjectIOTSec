@@ -25,7 +25,7 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 ## Installation
 
 ### Dependencies
-- Python3 [![python](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/)
+- Python3
 ```
 sudo apt install python3.8
 ```
@@ -37,7 +37,7 @@ sudo apt install masscan
 ```
 sudo apt install curl
 ```
-- Ubuntu 18.04 OS ![OS](https://img.shields.io/badge/OS-Ubuntu-orange.svg)
+- Ubuntu 18.04 OS
 ```
 Can be downloaded from: https://releases.ubuntu.com/18.04/
 ```
