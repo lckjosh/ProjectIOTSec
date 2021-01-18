@@ -26,6 +26,9 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 
 ### Dependencies
 - Python3
+```
+sudo apt install python3.8
+```
 - Masscan
 ```
 sudo apt install masscan
