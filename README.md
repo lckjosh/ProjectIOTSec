@@ -27,7 +27,13 @@ Below is provided a list of the main activity and probe that IoT-SecurityCheker 
 ### Dependencies
 - Python3
 - Masscan
+```
+sudo apt install masscan
+```
 - Curl
+```
+sudo apt install curl
+```
 - Ubuntu 18.04 OS
 
 ### Cloning and Compilation
