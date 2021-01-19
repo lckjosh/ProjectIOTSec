@@ -137,7 +137,7 @@ class Database(object):
                     banner = row2[row2.keys()[2]]
                     logging.debug('banner2: '+banner)
 
-                string = str(port)+'/'+str(banner)
+                string = str(port)+'projectiotsec'+str(banner)
                 logging.debug('string= '+string)
                 devicePort['ports'].append(port)
                 device['services'].append(string)

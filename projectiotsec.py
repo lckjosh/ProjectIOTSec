@@ -57,13 +57,13 @@ def iot_guess(portlist, hostlist):
                 logging.debug('Service: ' + service)
                 for keyword in my_dict['keywords']:
                     logging.debug('Keyword: ' + keyword)
-                    banner = service.split('/')
+                    banner = service.split('projectiotsec')
                     if (keyword.upper() in str(banner[1:]) or keyword.lower() in str(banner[1:])
                             or keyword in str(banner[1:])) and keyword != '':
                         iot.append('Device: %s has keyword: %s in port %s banner: %s, possibly compatible with %s exploits' %
-                                   (device['ip'], str(keyword), service.split('/')[0], str(banner[1:]), my_dict['category']))
+                                   (device['ip'], str(keyword), service.split('projectiotsec')[0], str(banner[1:]), my_dict['category']))
                         logging.debug(G+'Device: %s has keyword: %s in port %s banner: %s, possibly compatible with %s exploits' %
-                                      (device['ip'], str(keyword), service.split('/')[0], str(banner[1:]), my_dict['category'])+W)
+                                      (device['ip'], str(keyword), service.split('projectiotsec')[0], str(banner[1:]), my_dict['category'])+W)
     return iot
 
 # set exploit status for the specific IP_Address
