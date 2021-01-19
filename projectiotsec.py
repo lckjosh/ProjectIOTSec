@@ -205,7 +205,6 @@ if __name__ == '__main__':
         while True:
             print('\nList of all records found:\n')
             print('1. IP = ' + first_ip)
-            report_dict["IP"].append(first_ip)
 
             counter = 1
             previous_ip = ''
