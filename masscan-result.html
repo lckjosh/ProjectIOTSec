@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>ProjectIOTSec Scan Report</title>
+    <style>
+        body {
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+            color: #000;
+            font-family: Consolas, monaco, monospace;
+            font-size: 100%;
+            line-height: 1.4;
+            overflow-x: auto;
+            overflow-y: auto;
+            min-width: 800px;
+            position: relative;
+            text-align: center;
+        }
+        .center{
+            margin-left: auto;
+            margin-right: auto;
+            width: 85%;
+        }
+        table{
+            text-align: center;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        
+        td {
+            text-align: center;
+        }
+        
+        th {
+            background-color: #add8e6;
+            color: white;
+            text-align: center;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        tbody:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #FFFFCC;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+        td.cent{
+            text-align: left !important;
+        }
+        footer{
+            padding-top:20%;
+        }
+    </style>
+</head>
+
+<body>
+    <h2><img src=''></h2>
+    <h2>ProjectIOTSec Scan Report</h2>
+</br>
+<h2 style="text-align: center;">Masscan Results - Devices found in the network</h2>
+<table class="center">
+<thead>
+    <tr>
+        <th>Index</th>
+        <th>IP</th>
+        <th>Port</th>
+        <th>Banner</th>
+
+    </tr>
+</thead>
+
+<tbody>
+    <tr>
+        <td rowspan="11">1</td>
+        <td>192.168.1.16</td>
+        <td>80</td>
+        
+        <td class="cent">Device: 192.168.1.16 has keyword: Boa in port 80 banner: ['HTTP', '1.0 302 Redirect\\x0d\\x0aDate: Mon, 18 Jan 2021 02:59:03 GMT\\x0d\\x0aServer: Boa', '0.94.14rc21\\x0d\\x0aAccept-Ranges: bytes\\x0d\\x0aConnection: close\\x0d\\x0aContent-Type: text', 'html; charset=ISO-8859-1\\x0d\\x0aLocation: http:', '', '192.168.1.16', 'index.htm\\x0d\\x0a\\x0d'], possibly compatible with Router exploits</td>
+        
+    </tr>
+</tbody>
+
+<tbody>
+    <tr>
+        <td rowspan="11">2</td>
+        <td>192.168.1.159</td>
+        <td>21,443,445</td>
+        
+        <td class="cent">Device: 192.168.1.159 has Port 21 open, possibly compatible with NAS exploits,Device: 192.168.1.159 has Port 21 open, possibly compatible with Router exploits</td>
+        
+    </tr>
+</tbody>
+
+<tbody>
+    <tr>
+        <td rowspan="11">3</td>
+        <td>192.168.1.13</td>
+        <td>80,443</td>
+        
+        <td class="cent">Device: 192.168.1.13 has keyword: DCS-933L in port 80 banner: ['HTTP', '1.0 401 Authorization Required\\x0d\\x0aServer: alphapd\\x0d\\x0aDate: Mon Jan 18 10:58:39 2021\\x0d\\x0aPragma: no-cache\\x0d\\x0aCache-Control: no-cache\\x0d\\x0aContent-type: text', 'html\\x0d\\x0aWWW-Authenticate: Basic realm=\\x22DCS-933L\\x22\\x0d\\x0a\\x0d'], possibly compatible with IP_Camera exploits</td>
+        
+    </tr>
+</tbody>
+
+<tbody>
+    <tr>
+        <td rowspan="11">4</td>
+        <td>192.168.1.1</td>
+        <td>80</td>
+        
+        <td class="cent">Banner information not available</td>
+        
+    </tr>
+</tbody>
+
+</table>
+</br>
+<h2 style="text-align: center;">Exploitation Results</h2>
+<table class="center">
+    <thead>
+        <tr>
+            <th>Index</th>
+            <th>IP</th>
+            <!-- <th>Port</th>
+            <th>Banner</th> -->
+            <th>Exploit</th>
+    
+        </tr>
+    </thead>
+    
+    
+    
+    
+    
+    
+    <tbody>
+        <tr>
+            <td rowspan="11">3</td>
+            <td>192.168.1.13</td>
+            <!-- <td>80,443</td>
+            <td>Device: 192.168.1.13 has keyword: DCS-933L in port 80 banner: ['HTTP', '1.0 401 Authorization Required\\x0d\\x0aServer: alphapd\\x0d\\x0aDate: Mon Jan 18 10:58:39 2021\\x0d\\x0aPragma: no-cache\\x0d\\x0aCache-Control: no-cache\\x0d\\x0aContent-type: text', 'html\\x0d\\x0aWWW-Authenticate: Basic realm=\\x22DCS-933L\\x22\\x0d\\x0a\\x0d'], possibly compatible with IP_Camera exploits</td> -->
+            <td class="cent">Authenticated Root OS Command Execution exploit successful! Telnet service has been successfully started.</td>
+
+        </tr>
+    </tbody>
+    
+    
+    
+    
+    </table>
+<!-- </br>
+    <h2 style="text-align: center;">Exploitation Results - Successful</h2>
+    <table>
+    <thead>
+        <tr>
+            <th>Index</th>
+            <th>IP</th>
+            <th>Device Image</th>
+            <th>Port</th>
+            <th>Vulnerability</th>
+            <th>Exploit</th>
+            <th>Info</th>
+
+        </tr>
+    </thead>
+    
+</table>
+</br>
+<h2 style="text-align: center;">Exploitation Results - Unsuccessful</h2>
+<table>
+<thead>
+    <tr>
+        <th>Index</th>
+        <th>IP</th>
+        <th>Device Image</th>
+        <th>Port</th>
+        <th>Vulnerability</th>
+        <th>Exploit</th>
+        <th>Info</th>
+
+    </tr>
+</thead>
+
+</table> -->
+</body>
+<footer>
+</footer>
+</html>
