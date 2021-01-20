@@ -18,6 +18,7 @@ from databases import DataBase_Class
 from Utils import *
 import ast
 
+
 def iot_guess(portlist, hostlist):
     """
     Try to guess if a device is an IoT or not, please review the iotDetectionKeyword.txt file
@@ -75,6 +76,15 @@ def set_exploit_status(exploit_ip, exploit_status):
         if device['IP'][0] == exploit_ip:
             # set that device's exploit status
             device['Exploits'].append(exploit_status)
+
+# set bruteforce status for the specific IP_Address
+
+
+def set_bruteforce_status(exploit_ip, bruteforce_status):
+    for device in report_list:
+        if device['IP'][0] == exploit_ip:
+            # set that device's exploit status
+            device['Bruteforce'].append(bruteforce_status)
 
 
 if __name__ == '__main__':
@@ -159,7 +169,7 @@ if __name__ == '__main__':
         for row in rows_3:
             last_ip = row[0]
             last_port = row[1]
-            
+
         # Append the first IP
         report_dict["IP"].append(first_ip)
 
@@ -240,7 +250,8 @@ if __name__ == '__main__':
 
             while True:
                 # ask for ip to exploit
-                exploit_ip = input("\nPlease enter the IP address to exploit: ")
+                exploit_ip = input(
+                    "\nPlease enter the IP address to exploit: ")
                 regex = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
                 r = re.compile(regex)
                 if r.match(exploit_ip):
@@ -260,9 +271,10 @@ if __name__ == '__main__':
                         if x:
                             if x.group(1) not in categories:
                                 categories.append(x.group(1))
+                    # stop searching through report_list
                     break
 
-            # print out categories
+            # print out exploits for device
             option_exploit_dict = {}
             counter = 1
             for category in categories:
@@ -277,22 +289,80 @@ if __name__ == '__main__':
                             counter += 1
                 print()
 
+            # option at which bruteforcers start
+            option_bruteforce_start = counter
+
+            # print out bruteforcers
+            # HARDCODED PRINTING OUT OF BRUTEFORCERS (for now)
+            print('   ' + 'Bruteforcers')
+            print('   '+'='*len('Bruteforcers'))
+            option_exploit_dict[counter] = 'FTP Bruteforcer'
+            print(str(counter) + '. FTP Bruteforcer')
+            counter += 1
+
+            option_exploit_dict[counter] = 'SSH Bruteforcer'
+            print(str(counter) + '. SSH Bruteforcer')
+            counter += 1
+
+            option_exploit_dict[counter] = 'Telnet Bruteforcer'
+            print(str(counter) + '. Telnet Bruteforcer')
+            counter += 1
+            print()
+
             # ask for option of exploit
-            option = input("Please enter choice of exploit: ")
+            while True:
+                option = input("Please enter choice of exploit: ")
+                if int(option) in range(1, counter):
+                    break
+                else:
+                    print("Invalid choice! Please try again.")
 
-            # run exploit
-            exploit_selected = option_exploit_dict.get(int(option))
-            exploit_selected = exploit_selected.replace(".py", "")
-            exploit_status = eval(exploit_selected)(exploit_ip)
-
-            # set exploit status in report_list
-            set_exploit_status(exploit_ip, exploit_status)
-            print(exploit_status)
+            if int(option) < option_bruteforce_start:
+                # run exploit
+                exploit_selected = option_exploit_dict.get(int(option))
+                exploit_selected = exploit_selected.replace(".py", "")
+                exploit_status = eval(exploit_selected)(exploit_ip)
+                # set exploit status in report_list
+                set_exploit_status(exploit_ip, exploit_status)
+                print(exploit_status)
+            else:
+                target_list = []
+                target_list.append(exploit_ip)
+                # bruteforce selected
+                if option_exploit_dict.get(int(option)) == 'FTP Bruteforcer':
+                    # ftp bruteforce
+                    target_port = input(
+                        "Please enter the target port (default = 21) : ") or "21"
+                    ftpBrute = FTP_BruteForcer.FTP_BruteForcer(target_list=target_list, target_port=target_port,
+                                                               credfile='resources/wordlists/mirai.txt',
+                                                               thread=3)
+                    bruteforce_status_list = ftpBrute.run()
+                elif option_exploit_dict.get(int(option)) == 'SSH Bruteforcer':
+                    # ssh bruteforce
+                    target_port = input(
+                        "Please enter the target port (default = 22) : ") or "22"
+                    sshBrute = SSH_BruteForcer.SSH_BruteForcer(target_list=target_list, target_port=target_port,
+                                                               credfile='resources/wordlists/mirai.txt',
+                                                               thread=3)
+                    bruteforce_status_list = sshBrute.run()
+                elif option_exploit_dict.get(int(option)) == 'Telnet Bruteforcer':
+                    # telnet bruteforce
+                    target_port = input(
+                        "Please enter the target port (default = 23) : ") or "23"
+                    telnetBrute = Telnet_BruteForcer.Telnet_BruteForcer(target_list=target_list, target_port=target_port,
+                                                                        credfile='resources/wordlists/mirai.txt',
+                                                                        thread=3)
+                    bruteforce_status_list = telnetBrute.run()
+                # set bruteforce status in report_list
+                set_bruteforce_status(exploit_ip, bruteforce_status_list)
+                for foundCredentials in bruteforce_status_list:
+                    print(foundCredentials)
 
             global user_option
 
             while True:
-                user_option = input("Would you like to exploit another device? (y/n): ")
+                user_option = input(
+                    "Would you like to exploit another device? (y/n): ")
 
                 if (user_option == 'y'):
                     break
@@ -309,7 +379,7 @@ if __name__ == '__main__':
 
             else:
                 continue
-            
+
     elif (choice == '2'):
         print("help")
 

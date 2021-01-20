@@ -21,10 +21,11 @@ class ContinueBrute(Exception):
 
 class FTP_BruteForcer(object):
 
-    def __init__(self, target_list, credfile, thread):
+    def __init__(self, target_list, target_port, credfile, thread):
         self.connection_lock = BoundedSemaphore(value=thread)
         self.findings = []
         self.target_list = target_list
+        self.target_port = target_port
         try:
             self.credfile = open(credfile,'r')
         except FileExistsError:
@@ -48,7 +49,7 @@ class FTP_BruteForcer(object):
             ftp.connect(host=host, port=int(port))
             ftp.login(user, password)
             logging.info(G+'FTP Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (host, port, user, password) +W)
-            finding = host + ';' + port + ';' + 'FTP' + ';' + 'Default Credentials' + ';' + 'FTPBrute' + ';' + 'Credentials: ' + user + ':' + password
+            finding = 'FTP Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
             self.findings.append(finding)
             Found = True
             ftp.quit()
@@ -79,7 +80,7 @@ class FTP_BruteForcer(object):
             ftp.login(user, password)
             time.sleep(2)
             logging.info(G+'FTP anonymous login allowed for host: %s:%s \nUsername: %s \nPassword: %s' % (host, port, user, password)+W)
-            finding = host + ';' + port + ';' + 'FTP' + ';' + 'Default Credentials' + ';' + 'FTPBrute' + ';' + 'Credentials: ' + user + ':' + password
+            finding = 'FTP Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
             self.findings.append(finding)
             ftp.quit()
         except Exception as e:
@@ -89,15 +90,15 @@ class FTP_BruteForcer(object):
 
     def run(self):
         """
-        launch the threads tha perform brute force
+        launch the threads that perform brute force
         :return:
         """
         global Found, Fails
 
         for host in self.target_list:
             Fails = 0
-            target = host.split(':')[0]
-            port = host.split(':')[1]
+            target = host
+            port = self.target_port
             logging.info('Testing: %s:%s' % (target, port))
             self.anonLogin(target, port)
             self.credfile.seek(0)

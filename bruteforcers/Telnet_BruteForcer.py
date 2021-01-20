@@ -19,10 +19,11 @@ class ContinueBrute(Exception):
 
 class Telnet_BruteForcer(object):
 
-    def __init__(self, target_list, credfile, thread):
+    def __init__(self, target_list, target_port, credfile, thread):
         self.connection_lock = BoundedSemaphore(value=thread)
         self.findings = []
         self.target_list = target_list
+        self.target_port = target_port
 
         try:
             self.credfile = open(credfile,'r')
@@ -140,9 +141,7 @@ class Telnet_BruteForcer(object):
                 if self.auth_success(self.read_banner(tel)):
                     logging.info( G+ 'Telnet Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (
                         host, port, user, password) +W)
-                    finding = host + ';' + port + ';' + 'Telnet' + ';' + 'Default Credentials' + ';' + 'TelnetBrute' + \
-                              ';' + 'Telnet Password Found for host: %s:%s Username: %s Password: %s' % (
-                        host, port, user, password)
+                    finding = 'Telnet Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
                     self.findings.append(finding)
                     Found = True
 
@@ -153,9 +152,7 @@ class Telnet_BruteForcer(object):
                 if self.auth_success(self.read_banner(tel)):
                     logging.info(G + 'Telnet Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (
                         host, port, user, password)+W)
-                    finding = host + ';' + port + ';' + 'Telnet' + ';' + 'Default Credentials' + ';' + 'TelnetBrute' + \
-                              ';' + 'Telnet Password Found for host: %s:%s Username: %s Password: %s' % (
-                        host, port, user, password)
+                    finding = 'Telnet Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
                     self.findings.append(finding)
                     Found = True
 
@@ -170,9 +167,7 @@ class Telnet_BruteForcer(object):
                 if self.auth_success(self.read_banner(tel)):
                     logging.info(G+ 'Telnet Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (
                         host, port, user, password)+W)
-                    finding = host + ';' + port + ';' + 'Telnet' + ';' + 'Default Credentials' + ';' + 'TelnetBrute' + \
-                              ';' + 'Telnet Password Found for host: %s:%s Username: %s Password: %s' % (
-                        host, port, user, password)
+                    finding = 'Telnet Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
                     self.findings.append(finding)
                     Found = True
 
@@ -196,7 +191,7 @@ class Telnet_BruteForcer(object):
 
         for host in self.target_list:
             target = host.split(':')[0]
-            port = host.split(':')[1]
+            port = self.target_port
             self.credfile.seek(0)
             try:
                 for line in self.credfile.readlines():

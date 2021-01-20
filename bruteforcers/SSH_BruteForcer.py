@@ -18,9 +18,10 @@ class ContinueBrute(Exception):
 
 class SSH_BruteForcer(object):
 
-    def __init__(self, target_list, credfile, thread):
+    def __init__(self, target_list, target_port, credfile, thread):
         self.connection_lock = BoundedSemaphore(value=thread)
         self.target_list = target_list
+        self.target_port = target_port
         self.findings = []
 
         try:
@@ -46,8 +47,7 @@ class SSH_BruteForcer(object):
             ssh.login(server=host, port=port, username=user, password=password)
             time.sleep(1)
             logging.info(G + 'SSH Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (host, port, user, password) +W)
-            finding = host + ';' + port + ';' + 'SSH' + ';' + 'Default Credentials' + ';' + 'SSHBrute' + ';' + \
-                      'SSH Password Found for host: %s:%s Username: %s Password: %s' % (host, port, user, password)
+            finding = 'SSH Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
             self.findings.append(finding)
             Found = True
         except Exception as e:
@@ -74,8 +74,8 @@ class SSH_BruteForcer(object):
         for host in self.target_list:
             logging.debug('Host: '+host)
             Fails = 0
-            target = host.split(':')[0]
-            port = host.split(':')[1]
+            target = host
+            port = self.target_port
             self.credfile.seek(0)
             logging.info('Testing: %s:%s' % (target, port))
             try:
