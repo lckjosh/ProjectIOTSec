@@ -4,6 +4,7 @@ import sys
 import os
 import resources
 import re
+from bruteforcers import FTP_BruteForcer, SSH_BruteForcer, Telnet_BruteForcer
 from exploits.HomeController.VeraEdge_CVE_2019_13598 import VeraEdge_CVE_2019_13598
 from exploits.HomeController.VeraEdge_CVE_2019_15498 import VeraEdge_CVE_2019_15498
 from exploits.IP_Camera.Foscam_C2_CVE_2018_19070 import Foscam_C2_CVE_2018_19070
