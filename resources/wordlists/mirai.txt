@@ -58,3 +58,4 @@ admin:pass
 admin:meinsm
 tech:tech
 mother:fucker
+root:colour53news
