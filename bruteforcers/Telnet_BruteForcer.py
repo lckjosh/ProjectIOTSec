@@ -139,6 +139,8 @@ class Telnet_BruteForcer(object):
                 if self.auth_success(self.read_banner(tel)):
                     logging.info( G+ 'Telnet Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (
                         host, port, user, password) +W)
+                    if password == '':
+                        password = '(blank)'
                     finding = 'Telnet Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
                     self.findings.append(finding)
                     Found = True
@@ -150,6 +152,8 @@ class Telnet_BruteForcer(object):
                 if self.auth_success(self.read_banner(tel)):
                     logging.info(G + 'Telnet Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (
                         host, port, user, password)+W)
+                    if password == '':
+                        password = '(blank)'
                     finding = 'Telnet Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
                     self.findings.append(finding)
                     Found = True
@@ -165,6 +169,8 @@ class Telnet_BruteForcer(object):
                 if self.auth_success(self.read_banner(tel)):
                     logging.info(G+ 'Telnet Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (
                         host, port, user, password)+W)
+                    if password == '':
+                        password = '(blank)'
                     finding = 'Telnet Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
                     self.findings.append(finding)
                     Found = True
@@ -209,7 +215,7 @@ class Telnet_BruteForcer(object):
         time.sleep(1)
 
         if not self.findings:
-            self.findings.append('Credentials not found!')
+            self.findings.append('Telnet Credentials for ' + host + ':' + port + ' not found!')
         return self.findings
 
 

@@ -49,6 +49,8 @@ class FTP_BruteForcer(object):
             ftp.connect(host=host, port=int(port))
             ftp.login(user, password)
             logging.info(G+'FTP Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (host, port, user, password) +W)
+            if password == '':
+                password = '(blank)'
             finding = 'FTP Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
             self.findings.append(finding)
             Found = True
@@ -80,6 +82,8 @@ class FTP_BruteForcer(object):
             ftp.login(user, password)
             time.sleep(2)
             logging.info(G+'FTP anonymous login allowed for host: %s:%s \nUsername: %s \nPassword: %s' % (host, port, user, password)+W)
+            if password == '':
+                password = '(blank)'
             finding = 'FTP Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
             self.findings.append(finding)
             ftp.quit()
@@ -112,10 +116,6 @@ class FTP_BruteForcer(object):
                     if Found:
                         raise ContinueBrute
 
-                    if Fails > 5:
-                        logging.warning(R + 'Too many errors for host: %s:%s' % (target, port)+W)
-                        raise ContinueBrute
-
                     self.connection_lock.acquire()
                     logging.debug('Testing host: %s:%s \nUsername: %s \nPassword: %s' % (target, port, user, password))
                     t = Thread(target=self.connect, args=(target, user, password, port, True))
@@ -130,5 +130,5 @@ class FTP_BruteForcer(object):
             pass
 
         if not self.findings:
-            self.findings.append('Credentials not found!')
+            self.findings.append('FTP Credentials for ' + host + ':' + port + ' not found!')
         return self.findings

@@ -47,6 +47,8 @@ class SSH_BruteForcer(object):
             ssh.login(server=host, port=port, username=user, password=password)
             time.sleep(1)
             logging.info(G + 'SSH Password Found for host: %s:%s \nUsername: %s \nPassword: %s' % (host, port, user, password) +W)
+            if password == '':
+                password = '(blank)'
             finding = 'SSH Credentials for ' + host + ':' + port + ' found! ' + 'Credentials: ' + user + ':' + password
             self.findings.append(finding)
             Found = True
@@ -99,5 +101,5 @@ class SSH_BruteForcer(object):
                 continue
 
         if not self.findings:
-            self.findings.append('Credentials not found!')
+            self.findings.append('SSH Credentials for ' + host + ':' + port + ' not found!')
         return self.findings
