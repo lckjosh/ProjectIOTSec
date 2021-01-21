@@ -83,6 +83,8 @@ class SSH_BruteForcer(object):
                     logging.debug('line: '+str(line))
                     user = line.split(':')[0].strip('\r').strip('\n')
                     password = line.split(':')[1].strip('\r').strip('\n')
+                    if password == '(none)':
+                        password = ''
                     if Found:
                         raise ContinueBrute
 

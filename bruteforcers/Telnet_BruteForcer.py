@@ -93,8 +93,6 @@ class Telnet_BruteForcer(object):
             '#',
             'invalid',
             'Invalid',
-            'id',
-            'Id',
             'unknown',
             'command',
             'is not recognized as an internal or external command',
@@ -110,10 +108,10 @@ class Telnet_BruteForcer(object):
             'unknown keyword id'
         ]
 
-        if any(word in banner for word in keywords_ID):
-            return True
-        else:
-            return False
+        for word in keywords_ID:
+            if word in banner:
+                return True
+        return False
 
 
     def connect(self, host, user, password, port, release):
@@ -200,6 +198,8 @@ class Telnet_BruteForcer(object):
                         raise ContinueBrute
                     user = line.split(':')[0]
                     password = line.split(':')[1].strip('\r').strip('\n')
+                    if password == '(none)':
+                        password = ''
                     logging.debug('Testing host: %s:%s \nUsername: %s \nPassword: %s' % (target, port, user, password))
                     self.connect(target, user, password, port, True)
             except ContinueBrute:

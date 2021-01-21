@@ -107,6 +107,8 @@ class FTP_BruteForcer(object):
                 for line in self.credfile.readlines():
                     user = line.split(':')[0]
                     password = line.split(':')[1].strip('\r').strip('\n')
+                    if password == '(none)':
+                        password = ''
                     if Found:
                         raise ContinueBrute
 
