@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>ProjectIOTSec Scan Report</title>
+    <style>
+        body {
+            background: #ffffff;
+            margin: 0;
+            padding: 0;
+            color: #000;
+            font-family: Consolas, monaco, monospace;
+            font-size: 100%;
+            line-height: 1.4;
+            overflow-x: auto;
+            overflow-y: auto;
+            min-width: 800px;
+            position: relative;
+            text-align: center;
+        }
+        .center{
+            margin-left: auto;
+            margin-right: auto;
+            width: 85%;
+        }
+        table{
+            text-align: center;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        
+        td {
+            text-align: center;
+        }
+        
+        th {
+            background-color: #add8e6;
+            color: white;
+            text-align: center;
+            padding-top: 12px;
+            padding-bottom: 12px;
+        }
+
+        tbody:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:nth-child(even) {
+            background-color: #FFFFCC;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+        td.cent{
+            text-align: left !important;
+        }
+        footer{
+            padding-top:10%;
+        }
+    </style>
+</head>
+
+<body>
+    <br style="margin-top:10px;">
+    <h2 style="text-align: center;"><img src='../templates/logo1.PNG' style="text-align:center; width:18% !important;"></h2>
+    </br>
+    <h2 style="text-align: center;">Masscan Results - Devices found in the network</h2>
+    <table class="center">
+    <thead>
+        <tr>
+            <th>Index</th>
+            <th>IP</th>
+            <th>Port</th>
+            <th>Banner</th>
+
+        </tr>
+    </thead>
+    {% for device in report_list %}
+    <tbody>
+        <tr>
+            <td rowspan="11">{{ loop.index }}</td>
+            <td>{{ device.IP|join('<br>') }}</td>
+            <td>{{ device.Port|join(',') }}</td>
+            {% if device['Banner'] is defined and device['Banner']|length > 0 %}
+                {% if device['Banner']|length == 1 %}
+                <td class="cent"><ul>
+                    {% for items in device['Banner'] %}
+                    <li>{{ items }}</li>{% endfor %}
+                </ul></td>
+                {% else %}
+                <td class="cent"><ul>
+                    {% for items in device['Banner'] %}
+                    <li>{{ items }}</li><br>{% endfor %}
+                </ul></td>
+                {% endif %}
+            {% else %}
+            <td class="cent"><ul><li>Banner information not available</li></ul></td>
+            {% endif %}
+        </tr>
+    </tbody>
+    {% endfor %}
+    </table>
+    </br>
+
+    {% set isEmpty = [] %}
+    {% for device in report_list %}
+    {% if device['Exploits']|length > 0 or device['Bruteforce']|length > 0 %}
+    {% set ___ = isEmpty.append('1') %}
+    {% endif %}
+    {% endfor %}
+
+    {% if isEmpty|length > 0 %}
+    <h2 style="text-align: center;">Exploitation Results</h2>
+    <table class="center">
+        <thead>
+            <tr>
+                <th>Index</th>
+                <th>IP</th>
+                <th>Exploit</th>
+                <th>Bruteforce</th>
+        
+            </tr>
+        </thead>
+        {% set count = ['1'] %}   
+        {% for device in report_list %}
+        {% if device['Exploits']|length > 0 or device['Bruteforce']|length > 0 %}
+        <tbody>
+            <tr>
+                <td rowspan="11">{{ count|length }}</td>
+                {% set _ = count.append('1') %} 
+                <td>{{ device.IP|join('<br>') }}</td>
+                {% if device['Exploits']|length > 0 %}
+                    {% if device['Exploits']|length == 1 %}
+                    <td class="cent"><ul>
+                        {% for items in device['Exploits'] %}
+                        <li>{{ items }}</li>{% endfor %}
+                    </ul></td>
+                    {% else %}
+                    <td class="cent"><ul>
+                        {% for items in device['Exploits'] %}
+                        <li>{{ items }}</li><br>{% endfor %}
+                        </ul></td>
+                    {% endif %}
+                {% else %}
+                <td class="cent"><ul><li>Device has not been exploited by ProjectIotSec!</li></ul></td>
+                {% endif %}
+                {% if device['Bruteforce']|length > 0 %}
+                    {% if device['Bruteforce']|length == 1 %}
+                    <td class="cent"><ul>
+                        {% for items in device['Bruteforce'] %}
+                        <li>{{ items }}</li>{% endfor %}
+                    </ul></td>
+                    {% else %}
+                    <td class="cent"><ul>
+                        {% for items in device['Bruteforce'] %}
+                        <li>{{ items }}</li><br>{% endfor %}
+                    </ul></td>
+                    {% endif %}
+                {% else %}
+                <td class="cent"><ul><li>Device has not been bruteforced by ProjectIOTSec!</li></ul></td>
+                {% endif %}
+
+            </tr>
+        </tbody>
+        {% endif %}
+        {% endfor %}
+        </table>
+        {% endif %}
+</body>
+<footer>
+</footer>
+</html>
