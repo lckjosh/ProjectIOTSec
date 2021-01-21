@@ -96,4 +96,6 @@ class SSH_BruteForcer(object):
                 Found = False
                 continue
 
+        if not self.findings:
+            self.findings.append('Credentials not found!')
         return self.findings

@@ -176,7 +176,7 @@ class Telnet_BruteForcer(object):
 
             tel.close()
         except Exception as e:
-            logging.warning(R+'Error: '+str(e)+W)
+            logging.debug(R+'Error: '+str(e)+W)
 
         finally:
             if release:
@@ -207,6 +207,9 @@ class Telnet_BruteForcer(object):
                 continue
 
         time.sleep(1)
+
+        if not self.findings:
+            self.findings.append('Credentials not found!')
         return self.findings
 
 

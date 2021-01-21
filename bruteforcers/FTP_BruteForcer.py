@@ -127,4 +127,6 @@ class FTP_BruteForcer(object):
         except Exception:
             pass
 
+        if not self.findings:
+            self.findings.append('Credentials not found!')
         return self.findings
