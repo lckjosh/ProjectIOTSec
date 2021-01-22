@@ -46,6 +46,16 @@ sudo apt install curl
 sudo apt install hydra
 ```
 
+- Jinja2
+```
+sudo pip3 install jinja2
+```
+
+- beautifulsoup4
+```
+sudo pip3 install beautifulsoup4
+```
+
 
 ### Cloning and Compilation
 ```
