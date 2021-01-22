@@ -2,6 +2,10 @@ import argparse
 import logging
 import os
 import pwd
+from jinja2 import Environment, FileSystemLoader
+import codecs
+import time
+import sys
 
 # Console colors
 W = '\033[0m'  # white (normal)
@@ -64,15 +68,33 @@ def check_args(args):
                         level=numeric_loglevel)
 
 
-def make_report(findings, outfile):
-    try:
-        out = open(outfile, 'w')
-        out.write('IP;Port;Service;Vulnerability;Tool;Info\n')
-        for find in findings:
-            out.write(find+'\n')
-        out.close()
-    except Exception:
-        logging.warning(R+'Error while making report'+W)
+def create_report(report_list, masscan_output_dir, masscan_file_prefix, template_name):
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    if len(report_list) != 0:
+        try:
+            # Setting template.
+            env = Environment(loader=FileSystemLoader("templates"))
+            template = env.get_template(template_name)
+            html = template.render({'title': 'ProjectIOTSec Scan Report', 'report_list': report_list})
+            # Write report.
+            reportname=masscan_output_dir+masscan_file_prefix+timestr+".html"
+            with open(reportname, "w") as f:
+                f.write(template.render(
+                    title='ProjectIOTSec Scan Report',
+                    report_list=report_list
+                ))
+            print(report_list)
+            print(G+"Report : "+reportname+" successfully generated!"+W)
+
+        except:
+            e = sys.exc_info()[1]
+            print("Error: %s" % e)
+    else:
+        # print the corresponding message depending on which template_name
+        if template_name == "post_exploitation_scan_report_template.html":
+            print("Report not generated as no new ports detected.")
+        else:
+            print("Report cannot be generated, no information found in report_list.")
 
 
 def arg_parsing():
