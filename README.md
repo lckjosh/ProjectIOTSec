@@ -69,6 +69,6 @@ sudo python3 projectiotsec.py
 
 Options:
 [1] Perform scan of network using Masscan
-[2] Help page (effectively a man page)
+[2] Post Exploitation Scan
 [3] Exit program
 
