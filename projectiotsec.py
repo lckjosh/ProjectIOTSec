@@ -5,6 +5,7 @@ import os
 import resources
 import re
 from bs4 import BeautifulSoup
+from bruteforcers import FTP_BruteForcer, SSH_BruteForcer, Telnet_BruteForcer
 from exploits.HomeController.VeraEdge_CVE_2019_13598 import VeraEdge_CVE_2019_13598
 from exploits.HomeController.VeraEdge_CVE_2019_15498 import VeraEdge_CVE_2019_15498
 from exploits.IP_Camera.Foscam_C2_CVE_2018_19070 import Foscam_C2_CVE_2018_19070
@@ -78,6 +79,15 @@ def set_exploit_status(exploit_ip, exploit_status):
         if device['IP'][0] == exploit_ip:
             # set that device's exploit status
             device['Exploits'].append(exploit_status)
+
+# set bruteforce status for the specific IP_Address
+
+
+def set_bruteforce_status(exploit_ip, bruteforce_status):
+    for device in report_list:
+        if device['IP'][0] == exploit_ip:
+            # set that device's exploit status
+            device['Bruteforce'].append(bruteforce_status)
 
 
 if __name__ == '__main__':
@@ -162,7 +172,7 @@ if __name__ == '__main__':
         for row in rows_3:
             last_ip = row[0]
             last_port = row[1]
-            
+
         # Append the first IP
         report_dict["IP"].append(first_ip)
 
@@ -266,6 +276,7 @@ if __name__ == '__main__':
                             if x:
                                 if x.group(1) not in categories:
                                     categories.append(x.group(1))
+                        # stop searching through report_list
                         break
 
                 # print out categories
@@ -283,17 +294,74 @@ if __name__ == '__main__':
                                 counter += 1
                     print()
 
+                # option at which bruteforcers start
+                option_bruteforce_start = counter
+
+                # print out bruteforcers
+                # HARDCODED PRINTING OUT OF BRUTEFORCERS (for now)
+                print('   ' + 'Bruteforcers')
+                print('   '+'='*len('Bruteforcers'))
+                option_exploit_dict[counter] = 'FTP Bruteforcer'
+                print(str(counter) + '. FTP Bruteforcer')
+                counter += 1
+
+                option_exploit_dict[counter] = 'SSH Bruteforcer'
+                print(str(counter) + '. SSH Bruteforcer')
+                counter += 1
+
+                option_exploit_dict[counter] = 'Telnet Bruteforcer'
+                print(str(counter) + '. Telnet Bruteforcer')
+                counter += 1
+                print()
+
                 # ask for option of exploit
-                option = input("Please enter choice of exploit: ")
+                while True:
+                    option = input("Please enter choice of exploit: ")
+                    if int(option) in range(1, counter):
+                        break
+                    else:
+                        print("Invalid choice! Please try again.")
 
-                # run exploit
-                exploit_selected = option_exploit_dict.get(int(option))
-                exploit_selected = exploit_selected.replace(".py", "")
-                exploit_status = eval(exploit_selected)(exploit_ip)
-
-                # set exploit status in report_list
-                set_exploit_status(exploit_ip, exploit_status)
-                print(exploit_status)
+                if int(option) < option_bruteforce_start:
+                    # run exploit
+                    exploit_selected = option_exploit_dict.get(int(option))
+                    exploit_selected = exploit_selected.replace(".py", "")
+                    exploit_status = eval(exploit_selected)(exploit_ip)
+                    # set exploit status in report_list
+                    set_exploit_status(exploit_ip, exploit_status)
+                    print(exploit_status)
+                else:
+                    target_list = []
+                    target_list.append(exploit_ip)
+                    # bruteforce selected
+                    if option_exploit_dict.get(int(option)) == 'FTP Bruteforcer':
+                        # ftp bruteforce
+                        target_port = input(
+                            "Please enter the target port (default = 21) : ") or "21"
+                        ftpBrute = FTP_BruteForcer.FTP_BruteForcer(target_list=target_list, target_port=target_port,
+                                                                credfile='resources/wordlists/mirai.txt',
+                                                                thread=3)
+                        bruteforce_status_list = ftpBrute.run()
+                    elif option_exploit_dict.get(int(option)) == 'SSH Bruteforcer':
+                        # ssh bruteforce
+                        target_port = input(
+                            "Please enter the target port (default = 22) : ") or "22"
+                        sshBrute = SSH_BruteForcer.SSH_BruteForcer(target_list=target_list, target_port=target_port,
+                                                                credfile='resources/wordlists/mirai.txt',
+                                                                thread=3)
+                        bruteforce_status_list = sshBrute.run()
+                    elif option_exploit_dict.get(int(option)) == 'Telnet Bruteforcer':
+                        # telnet bruteforce
+                        target_port = input(
+                            "Please enter the target port (default = 23) : ") or "23"
+                        telnetBrute = Telnet_BruteForcer.Telnet_BruteForcer(target_list=target_list, target_port=target_port,
+                                                                            credfile='resources/wordlists/mirai.txt',
+                                                                            thread=3)
+                        bruteforce_status_list = telnetBrute.run()
+                    # set bruteforce status in report_list
+                    set_bruteforce_status(exploit_ip, bruteforce_status_list)
+                    for foundCredentials in bruteforce_status_list:
+                        print(foundCredentials)
 
                 global user_option
 
@@ -331,7 +399,7 @@ if __name__ == '__main__':
             create_report(report_list, masscan_output_dir, masscan_file_prefix, template_name)
             print('\n' + 'Program exiting...')
             sys.exit(0)
-            
+
     elif (choice == '2'):
         run = True
         template_name = 'post_exploitation_scan_report_template.html'
