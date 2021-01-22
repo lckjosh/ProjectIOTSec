@@ -83,7 +83,7 @@ def create_report(report_list, masscan_output_dir, masscan_file_prefix, template
                     title='ProjectIOTSec Scan Report',
                     report_list=report_list
                 ))
-            print(report_list)
+            # print(report_list)
             print(G+"Report : "+reportname+" successfully generated!"+W)
 
         except:
