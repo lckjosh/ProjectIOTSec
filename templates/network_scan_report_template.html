@@ -146,18 +146,18 @@
                         </ul></td>
                     {% endif %}
                 {% else %}
-                <td class="cent"><ul><li>Device has not been exploited by ProjectIotSec!</li></ul></td>
+                <td class="cent"><ul><li>Device has not been exploited by ProjectIOTSec!</li></ul></td>
                 {% endif %}
                 {% if device['Bruteforce']|length > 0 %}
                     {% if device['Bruteforce']|length == 1 %}
                     <td class="cent"><ul>
                         {% for items in device['Bruteforce'] %}
-                        <li>{{ items }}</li>{% endfor %}
+                        <li>{{ items|join() }}</li>{% endfor %}
                     </ul></td>
                     {% else %}
                     <td class="cent"><ul>
                         {% for items in device['Bruteforce'] %}
-                        <li>{{ items }}</li><br>{% endfor %}
+                        <li>{{ items|join() }}</li><br>{% endfor %}
                     </ul></td>
                     {% endif %}
                 {% else %}
