@@ -22,6 +22,7 @@ from jinja2 import Environment, FileSystemLoader
 import codecs
 import time
 
+
 def iot_guess(portlist, hostlist):
     """
     Try to guess if a device is an IoT or not, please review the iotDetectionKeyword.txt file
@@ -30,8 +31,11 @@ def iot_guess(portlist, hostlist):
     :return:
     """
     iot = []
+    iot2 = []
     db = open('resources/iotDetectionKeyword.txt', 'r')
     # template:{'category':<cat-name>,'keywords':[list-of-key],'ports':[list-of-port],'manufacturers':[list-of-manufacturers],'vulns':[list-of-known-vulns]}
+
+    dict_ip_category_matchcount = {}
 
     # for each category of IoT defined inside the iotDetection.txt file perform an IoT identification
     # TODO refactoring -> too much for loops!
@@ -50,12 +54,16 @@ def iot_guess(portlist, hostlist):
             for port in device['ports']:
                 logging.debug('Port: ' + port)
                 if port in my_dict['ports']:
-                    iot.append('Device: %s has Port %s open, possibly compatible with %s exploits' %
-                               (device['ip'], str(port), my_dict['category']))
-                    logging.debug(G+'Device: %s has Port %s open, possibly compatible with %s exploits' %
-                                  (device['ip'], str(port), my_dict['category'])+W)
+                    if device['ip'] not in dict_ip_category_matchcount:
+                        dict_ip_category_matchcount[device['ip']] = {}
+                    dict_ip_category_matchcount[device['ip']
+                                                ][my_dict['category']] = 1
+                    iot.append('Device: %s has Port %s open' %
+                               (device['ip'], str(port)))
+                    logging.debug(G+'Device: %s has Port %s open' %
+                                  (device['ip'], str(port))+W)
 
-        # IoT detection based on keywords in banner
+        # IoT detection based on keywords and manufacturers in banner
         for device in hostlist:
             logging.debug('DeviceB: ' + str(device))
             for service in device['services']:
@@ -65,11 +73,49 @@ def iot_guess(portlist, hostlist):
                     banner = service.split('projectiotsec')
                     if (keyword.upper() in str(banner[1:]) or keyword.lower() in str(banner[1:])
                             or keyword in str(banner[1:])) and keyword != '':
-                        iot.append('Device: %s has keyword: %s in port %s banner: %s, possibly compatible with %s exploits' %
-                                   (device['ip'], str(keyword), service.split('projectiotsec')[0], str(banner[1:]), my_dict['category']))
-                        logging.debug(G+'Device: %s has keyword: %s in port %s banner: %s, possibly compatible with %s exploits' %
-                                      (device['ip'], str(keyword), service.split('projectiotsec')[0], str(banner[1:]), my_dict['category'])+W)
-    return iot
+                        if device['ip'] not in dict_ip_category_matchcount:
+                            dict_ip_category_matchcount[device['ip']] = {}
+                        if my_dict['category'] in dict_ip_category_matchcount[device['ip']]:
+                            dict_ip_category_matchcount[device['ip']
+                                                        ][my_dict['category']] += 1
+                        else:
+                            dict_ip_category_matchcount[device['ip']
+                                                        ][my_dict['category']] = 1
+                        iot.append('Device: %s has keyword: %s in port %s banner: %s' %
+                                   (device['ip'], str(keyword), service.split('projectiotsec')[0], str(banner[1:])))
+                        logging.debug(G+'Device: %s has keyword: %s in port %s banner: %s' %
+                                      (device['ip'], str(keyword), service.split('projectiotsec')[0], str(banner[1:]))+W)
+                for manufacturer in my_dict['manufacturers']:
+                    logging.debug('manufacturer: ' + manufacturer)
+                    banner = service.split('projectiotsec')
+                    if (manufacturer.upper() in str(banner[1:]) or manufacturer.lower() in str(banner[1:])
+                            or manufacturer in str(banner[1:])) and manufacturer != '':
+                        if device['ip'] not in dict_ip_category_matchcount:
+                            dict_ip_category_matchcount[device['ip']] = {}
+                        if my_dict['category'] in dict_ip_category_matchcount[device['ip']]:
+                            dict_ip_category_matchcount[device['ip']
+                                                        ][my_dict['category']] += 1
+                        else:
+                            dict_ip_category_matchcount[device['ip']
+                                                        ][my_dict['category']] = 1
+                        iot.append('Device: %s has manufacturer: %s in port %s banner: %s' %
+                                   (device['ip'], str(manufacturer), service.split('projectiotsec')[0], str(banner[1:])))
+                        logging.debug(G+'Device: %s has manufacturer: %s in port %s banner: %s' %
+                                      (device['ip'], str(manufacturer), service.split('projectiotsec')[0], str(banner[1:]))+W)
+
+    # determine most likely category based on number of matches
+    for ip in dict_ip_category_matchcount:
+        max_value = max(dict_ip_category_matchcount[ip].values())
+        max_list = []
+        for category in dict_ip_category_matchcount[ip]:
+            if dict_ip_category_matchcount[ip].get(category) == max_value:
+                max_list.append(category)
+
+        for category in max_list:
+            iot2.append('Device ' + ip +
+                        ' is possibly compatible with ' + category + ' exploits')
+
+    return iot, iot2
 
 # set exploit status for the specific IP_Address
 
@@ -151,7 +197,8 @@ if __name__ == '__main__':
             tab_name, rows)
         db.close_db()
 
-        iot_list = iot_guess(device_port_list, device_service_list)
+        iot_list, compatible_list = iot_guess(
+            device_port_list, device_service_list)
         final_list = sorted(list(set(iot_list)))
 
         # Initialising list and dictionary for report generation
@@ -193,6 +240,9 @@ if __name__ == '__main__':
 
                     elif ip != previous_ip:
                         # Appends the dictionary to list
+                        for line in compatible_list:
+                            if (' ' + previous_ip + ' ') in line:
+                                report_dict["Banner"].append(line)
                         report_dict_copy = report_dict.copy()
                         report_list.append(report_dict_copy)
 
@@ -210,11 +260,14 @@ if __name__ == '__main__':
                                 report_dict["Banner"].append(text)
 
             if last_ip == ip and last_port == port:
+                for line in compatible_list:
+                    if (' ' + ip + ' ') in line:
+                        report_dict["Banner"].append(line)
                 report_dict_copy = report_dict.copy()
                 report_list.append(report_dict_copy)
 
             previous_ip = row[0]
-            
+
         # set template_name for network scan HTML report
         template_name = 'network_scan_report_template.html'
         try:
@@ -238,8 +291,12 @@ if __name__ == '__main__':
                                 pass
 
                             elif ip != previous_ip:
+                                for line in compatible_list:
+                                    if (' ' + previous_ip + ' ') in line:
+                                        print('\033[32m   ' + line + '\033[0m')
                                 counter += 1
-                                print('\n%s. %s = %s' % (counter, key, row[key]))
+                                print('\n%s. %s = %s' %
+                                      (counter, key, row[key]))
 
                         else:
                             port = row[key]
@@ -250,13 +307,19 @@ if __name__ == '__main__':
                                     if (' ' + port + ' ') in text:
                                         print('   ' + text)
 
+                    if last_ip == ip and last_port == port:
+                        for line in compatible_list:
+                            if (' ' + ip + ' ') in line:
+                                print('\033[32m   ' + line + '\033[0m')
+
                     previous_ip = row[0]
 
                 print('\nTotal result: '+str(counter))
 
                 while True:
                     # ask for ip to exploit
-                    exploit_ip = input("\nPlease enter the IP address to exploit: ")
+                    exploit_ip = input(
+                        "\nPlease enter the IP address to exploit: ")
                     regex = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
                     r = re.compile(regex)
                     if r.match(exploit_ip):
@@ -268,16 +331,13 @@ if __name__ == '__main__':
 
                 # try to get categories of exploits selected ip may be compatible with
                 categories = []
-                for ip in report_list:
-                    if ip['IP'][0] == exploit_ip:
-                        for line in ip['Banner']:
-                            x = re.search(
-                                r"possibly compatible with ([\w_]+)", line)
-                            if x:
-                                if x.group(1) not in categories:
-                                    categories.append(x.group(1))
-                        # stop searching through report_list
-                        break
+                for line in compatible_list:
+                    if (' ' + exploit_ip + ' ') in line:
+                        x = re.search(
+                            r"possibly compatible with ([\w_]+)", line)
+                        if x:
+                            if x.group(1) not in categories:
+                                categories.append(x.group(1))
 
                 # print out categories
                 option_exploit_dict = {}
@@ -339,16 +399,16 @@ if __name__ == '__main__':
                         target_port = input(
                             "Please enter the target port (default = 21) : ") or "21"
                         ftpBrute = FTP_BruteForcer.FTP_BruteForcer(target_list=target_list, target_port=target_port,
-                                                                credfile='resources/wordlists/mirai.txt',
-                                                                thread=3)
+                                                                   credfile='resources/wordlists/mirai.txt',
+                                                                   thread=3)
                         bruteforce_status_list = ftpBrute.run()
                     elif option_exploit_dict.get(int(option)) == 'SSH Bruteforcer':
                         # ssh bruteforce
                         target_port = input(
                             "Please enter the target port (default = 22) : ") or "22"
                         sshBrute = SSH_BruteForcer.SSH_BruteForcer(target_list=target_list, target_port=target_port,
-                                                                credfile='resources/wordlists/mirai.txt',
-                                                                thread=3)
+                                                                   credfile='resources/wordlists/mirai.txt',
+                                                                   thread=3)
                         bruteforce_status_list = sshBrute.run()
                     elif option_exploit_dict.get(int(option)) == 'Telnet Bruteforcer':
                         # telnet bruteforce
@@ -366,7 +426,8 @@ if __name__ == '__main__':
                 global user_option
 
                 while True:
-                    user_option = input("Would you like to exploit another device? (y/n): ")
+                    user_option = input(
+                        "Would you like to exploit another device? (y/n): ")
 
                     if (user_option == 'y'):
                         break
@@ -384,7 +445,8 @@ if __name__ == '__main__':
                     os.remove(textFilePath)
 
                     # generate HTML report
-                    create_report(report_list, masscan_output_dir, masscan_file_prefix, template_name)
+                    create_report(report_list, masscan_output_dir,
+                                  masscan_file_prefix, template_name)
                     print('\n' + 'Program exiting...')
                     sys.exit(0)
 
@@ -396,7 +458,8 @@ if __name__ == '__main__':
             os.remove(textFilePath)
 
             # generate HTML report
-            create_report(report_list, masscan_output_dir, masscan_file_prefix, template_name)
+            create_report(report_list, masscan_output_dir,
+                          masscan_file_prefix, template_name)
             print('\n' + 'Program exiting...')
             sys.exit(0)
 
@@ -405,8 +468,9 @@ if __name__ == '__main__':
         template_name = 'post_exploitation_scan_report_template.html'
         while run:
             try:
-                # request user for the filepath for the baseline HTML report 
-                htmlFilePath = input("Enter the file path for the baseline HTML report: ")
+                # request user for the filepath for the baseline HTML report
+                htmlFilePath = input(
+                    "Enter the file path for the baseline HTML report: ")
 
                 # retrieve the html file content
                 with open(htmlFilePath, 'r') as file:
@@ -422,13 +486,14 @@ if __name__ == '__main__':
                 table = soup.find_all('table')[0]
 
                 #  Populate baseline_list
-                for row in table.find_all('tr')[1:]:                  
+                for row in table.find_all('tr')[1:]:
                     cells = row.find_all('td')
                     baseline_dict["IP"].append(cells[1].get_text())
-                    baseline_dict["Port"] = list(cells[2].get_text().split(","))
+                    baseline_dict["Port"] = list(
+                        cells[2].get_text().split(","))
                     baseline_dict_copy = baseline_dict.copy()
                     baseline_list.append(baseline_dict_copy)
-                    
+
                     # have to reset baseline_dict for the next device
                     baseline_dict = {key: [] for key in dict_keys}
                 # print(baseline_list)
@@ -449,11 +514,11 @@ if __name__ == '__main__':
                     os.makedirs(masscan_output_dir)
                 ip_target_range = input("Enter IP range with CIDR : ")
                 scanner = Masscan_Scanner.Masscan(target=ip_target_range,
-                                                prefix=masscan_file_prefix,
-                                                binary=masscan_binary_path,
-                                                max_rate=masscan_max_rate,
-                                                outdir=masscan_output_dir,
-                                                wait_time=masscan_wait_time)
+                                                  prefix=masscan_file_prefix,
+                                                  binary=masscan_binary_path,
+                                                  max_rate=masscan_max_rate,
+                                                  outdir=masscan_output_dir,
+                                                  wait_time=masscan_wait_time)
                 ip_validity = scanner.check_ip_format(ip_target_range)
                 while(ip_validity == False):
                     ip_target_range = input("Enter IP range with CIDR : ")
@@ -480,7 +545,7 @@ if __name__ == '__main__':
                 # store the result in a post_exploitation_list
                 post_exploitation_list = []
                 post_exploitation_dict = {key: [] for key in dict_keys}
-                
+
                 # Initialising variables
                 last_ip = ''
                 last_port = ''
@@ -494,7 +559,7 @@ if __name__ == '__main__':
                 for row in rows_3:
                     last_ip = row[0]
                     last_port = row[1]
-                    
+
                 # Append the first IP
                 post_exploitation_dict["IP"].append(first_ip)
 
@@ -515,10 +580,12 @@ if __name__ == '__main__':
                             elif ip != previous_ip:
                                 # Appends the dictionary to list
                                 post_exploitation_dict_copy = post_exploitation_dict.copy()
-                                post_exploitation_list.append(post_exploitation_dict_copy)
+                                post_exploitation_list.append(
+                                    post_exploitation_dict_copy)
 
                                 # Reset dict key values
-                                post_exploitation_dict = {key: [] for key in dict_keys}
+                                post_exploitation_dict = {
+                                    key: [] for key in dict_keys}
                                 post_exploitation_dict["IP"].append(ip)
 
                         else:
@@ -527,7 +594,8 @@ if __name__ == '__main__':
 
                     if last_ip == ip and last_port == port:
                         post_exploitation_dict_copy = post_exploitation_dict.copy()
-                        post_exploitation_list.append(post_exploitation_dict_copy)
+                        post_exploitation_list.append(
+                            post_exploitation_dict_copy)
 
                     previous_ip = row[0]
                 # print(post_exploitation_list)
@@ -538,25 +606,27 @@ if __name__ == '__main__':
                 for baseline_device in baseline_list:
                     for post_exploitation_device in post_exploitation_list:
                         if baseline_device['IP'][0] == post_exploitation_device['IP'][0]:
-                            new_ports = list(set(post_exploitation_device['Port']).difference(baseline_device['Port']))
+                            new_ports = list(set(post_exploitation_device['Port']).difference(
+                                baseline_device['Port']))
                             if len(new_ports) != 0:
                                 report_dict['IP'] = baseline_device['IP']
                                 report_dict['Port'] = new_ports
                                 report_dict_copy = report_dict.copy()
                                 report_list.append(report_dict_copy)
                 # print(report_list)
-                
+
                 run = False
             except OSError as e:
                 print(e)
                 run = True
-        
+
         # delete the "temporary" scan-result text file
         textFilePath = masscan_output_dir + scanner.get_outfile()
         os.remove(textFilePath)
-        
+
         # generate post exploitation HTML report
-        create_report(report_list, masscan_output_dir, masscan_file_prefix, template_name)
+        create_report(report_list, masscan_output_dir,
+                      masscan_file_prefix, template_name)
         print('\n' + 'Program exiting...')
         sys.exit(0)
 
