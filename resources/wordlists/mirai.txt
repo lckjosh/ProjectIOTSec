@@ -59,3 +59,5 @@ admin:pass
 admin:meinsm
 tech:tech
 mother:fucker
+pwn:(none)
+ftpuser:(none)
