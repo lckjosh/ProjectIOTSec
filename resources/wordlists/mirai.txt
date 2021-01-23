@@ -1,7 +1,10 @@
+admin:password
+admin:(none)
+admin:admin
+root:colour53news
 root:xc3511
 root:vizxv
 root:admin
-admin:admin
 root:888888
 root:xmhdipc
 root:default
@@ -10,11 +13,9 @@ root:123456
 root:54321
 support:support
 root:(none)
-admin:password
 root:root
 root:12345
 user:user
-admin:(none)
 root:pass
 admin:admin1234
 root:1111
@@ -58,4 +59,5 @@ admin:pass
 admin:meinsm
 tech:tech
 mother:fucker
-root:colour53news
+pwn:(none)
+ftpuser:(none)
