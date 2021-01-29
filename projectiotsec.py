@@ -316,16 +316,23 @@ if __name__ == '__main__':
 
                 print('\nTotal result: '+str(counter))
 
-                while True:
+                valid_ip = False
+                while not valid_ip:
                     # ask for ip to exploit
                     exploit_ip = input(
                         "\nPlease enter the IP address to exploit: ")
                     regex = '^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$'
                     r = re.compile(regex)
-                    if r.match(exploit_ip):
-                        break
-                    else:
+                    if not r.match(exploit_ip):
                         print("Invalid IP address! ")
+                        continue
+                    else:
+                        for line in compatible_list:
+                            if (' ' + exploit_ip + ' ') in line:
+                                valid_ip = True
+                    if not valid_ip:
+                        print("The IP address you have entered is not compatible with ProjectIOTSec!")
+                        
 
                 print(exploit_ip + " may be compatible with the following exploits: \n")
 
