@@ -102,4 +102,8 @@ class SSH_BruteForcer(object):
 
         if not self.findings:
             self.findings.append('SSH Credentials for ' + host + ':' + port + ' not found!')
+            print(R+'SSH Credentials for ' + host + ':' + port + ' not found!'+W)
+        else:
+            for foundCredentials in self.findings:
+                print(G+foundCredentials+W)
         return self.findings

@@ -131,4 +131,8 @@ class FTP_BruteForcer(object):
 
         if not self.findings:
             self.findings.append('FTP Credentials for ' + host + ':' + port + ' not found!')
+            print(R+'FTP Credentials for ' + host + ':' + port + ' not found!'+W)
+        else:
+            for foundCredentials in self.findings:
+                print(G+foundCredentials+W)
         return self.findings

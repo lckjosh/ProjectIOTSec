@@ -389,7 +389,6 @@ if __name__ == '__main__':
                     exploit_status = eval(exploit_selected)(exploit_ip)
                     # set exploit status in report_list
                     set_exploit_status(exploit_ip, exploit_status)
-                    print(exploit_status)
                 else:
                     target_list = []
                     target_list.append(exploit_ip)
@@ -420,8 +419,8 @@ if __name__ == '__main__':
                         bruteforce_status_list = telnetBrute.run()
                     # set bruteforce status in report_list
                     set_bruteforce_status(exploit_ip, bruteforce_status_list)
-                    for foundCredentials in bruteforce_status_list:
-                        print(foundCredentials)
+                    # for foundCredentials in bruteforce_status_list:
+                    #     print(foundCredentials)
 
                 global user_option
 
