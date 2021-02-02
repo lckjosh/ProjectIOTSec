@@ -14,7 +14,6 @@ Below is provided a list of the main activity and probe that ProjectIOTSec is ab
   - SSH
   - FTP
   - Telnet
-  - HTTP (Via Hydra)
 - ASUS RT-AC3200 Router Exploit
 - QNAP TS-412 NAS Exploit 
 - Dlink DCS-933L IP Camera Exploit
