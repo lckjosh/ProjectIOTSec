@@ -58,10 +58,10 @@ def iot_guess(portlist, hostlist):
                         dict_ip_category_matchcount[device['ip']] = {}
                     dict_ip_category_matchcount[device['ip']
                                                 ][my_dict['category']] = 1
-                    iot.append('Device: %s has Port %s open' %
-                               (device['ip'], str(port)))
-                    logging.debug(G+'Device: %s has Port %s open' %
-                                  (device['ip'], str(port))+W)
+                    # iot.append('Device: %s has Port %s open' %
+                    #            (device['ip'], str(port)))
+                    # logging.debug(G+'Device: %s has Port %s open' %
+                    #               (device['ip'], str(port))+W)
 
         # IoT detection based on keywords and manufacturers in banner
         for device in hostlist:
