@@ -1,5 +1,5 @@
 # ProjectIOTSec
-This is a IOT Pentesting Framework Tool that has been coded in Python3 for Ubuntu 18.04
+This is a IOT Pentesting Framework Tool that has been developed in Python3 and in Ubuntu 18.04.5 LTS 
 
 [![python](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/)
 ![OS](https://img.shields.io/badge/OS-Ubuntu-orange.svg)
