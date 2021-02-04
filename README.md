@@ -16,51 +16,25 @@ Below is provided a list of the main activity and probe that ProjectIOTSec is ab
   - Telnet
 - ASUS RT-AC3200 Router Exploit
 - QNAP TS-412 NAS Exploit 
-- Dlink DCS-933L IP Camera Exploit
+- D-Link DCS-933L IP Camera Exploit
 - VeraEdge Home Controller Exploit
 - Foscam C2 IP Camera Exploit
 - Generation of HTML Report
 
 ## Installation
 
-### Dependencies
-- Ubuntu 18.04 OS
-```
-Can be downloaded from: https://releases.ubuntu.com/18.04/
-```
-- Python3
-```
-sudo apt install python3.8
-```
-- Masscan
-```
-sudo apt install masscan
-```
-- Curl
-```
-sudo apt install curl
-```
-- Hydra
-```
-sudo apt install hydra
-```
-
-- Jinja2
-```
-sudo pip3 install jinja2
-```
-
-- beautifulsoup4
-```
-sudo pip3 install beautifulsoup4
-```
-
-
-### Cloning and Compilation
+### Cloning the repo
 ```
 git clone https://github.com/lckjosh/ProjectIOTSec.git
 cd ProjectIOTSec
 ```
+
+### Install Dependencies
+```
+sudo apt install masscan curl
+sudo pip3 install -r requirements.txt
+```
+
 ## Usage  
 __NOTE: RUN `sudo python3 projectiotsec.py` to run as user with root privileges.__
 ```
@@ -70,4 +44,3 @@ Options:
 [1] Perform scan of network using Masscan
 [2] Post Exploitation Scan
 [3] Exit program
-
