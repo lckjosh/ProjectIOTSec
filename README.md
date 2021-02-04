@@ -36,11 +36,20 @@ sudo pip3 install -r requirements.txt
 ```
 
 ## Usage  
-__NOTE: RUN `sudo python3 projectiotsec.py` to run as user with root privileges.__
+__NOTE: RUN `sudo python3 projectiotsec.py` to run as user with root privileges.__  
+__Main Menu:__
 ```
-sudo python3 projectiotsec.py
+  _____           _           _   _____ ____ _______ _____           
+ |  __ \         (_)         | | |_   _/ __ \__   __/ ____|          
+ | |__) | __ ___  _  ___  ___| |_  | || |  | | | | | (___   ___  ___ 
+ |  ___/ '__/ _ \| |/ _ \/ __| __| | || |  | | | |  \___ \ / _ \/ __|
+ | |   | | | (_) | |  __/ (__| |_ _| || |__| | | |  ____) |  __/ (__ 
+ |_|   |_|  \___/| |\___|\___|\__|_____\____/  |_| |_____/ \___|\___|
+                _/ |                                                 
+               |__/                                                  
 
-Options:
-[1] Perform scan of network using Masscan
-[2] Post Exploitation Scan
-[3] Exit program
+
+1. Scan Network
+2. Post Exploitation Scan
+3. Exit
+```
