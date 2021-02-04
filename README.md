@@ -52,4 +52,6 @@ __Main Menu:__
 1. Scan Network
 2. Post Exploitation Scan
 3. Exit
+
+Please choose option number: 
 ```
