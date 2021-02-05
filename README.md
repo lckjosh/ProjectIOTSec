@@ -4,7 +4,7 @@ This is a IOT Pentesting Framework Tool that has been developed in Python3 and i
 [![python](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/)
 ![OS](https://img.shields.io/badge/OS-Ubuntu-orange.svg)
 
-ProjectIOTSec is a software which seeks to aid in the discovery and exploitation process of IoT devices. This IOT Pentesting Framework contains exploit modules for various different IOT devices. ProjectIOTSec is able to identify any device present inside a network using a port scan application (Masscan), perform different brute-force attacks and probe some IoT exploits against the identified targets to validate the presence of known vulnerabilities.
+ProjectIOTSec is a software which seeks to aid in the discovery, exploitation and post exploitation detection of IoT devices. This IOT Pentesting Framework contains exploit modules for various different IOT devices. ProjectIOTSec is able to identify any device present inside a network using a port scan application (Masscan), perform different brute-force attacks and probe some IoT exploits against the identified targets to validate the presence of known vulnerabilities.
 
 ## Main Features
 Below is a list of the main activities and exploits that ProjectIOTSec is able to perform:
